@@ -99,7 +99,7 @@ public class QueryUtil {
         return countryList;
     }
 
-    public List<Songs> getSongsWithOddID() {
+    public List<Songs> getSongsWithEvenID() {
         List<Songs> songsList = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();

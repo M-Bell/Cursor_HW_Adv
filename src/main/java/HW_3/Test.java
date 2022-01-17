@@ -16,7 +16,7 @@ public class Test {
         System.out.println(queryUtil.getCountriesByPopulationAndName(100000000, "%e%"));
         System.out.println();
         System.out.println("SELECT SongID, SongName FROM SongsTable WHERE SongID%2=0");
-        System.out.println(queryUtil.getSongsWithOddID());
+        System.out.println(queryUtil.getSongsWithEvenID());
 
         queryUtil.closeConnection();
     }
