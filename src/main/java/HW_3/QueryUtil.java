@@ -1,12 +1,13 @@
 package HW_3;
 
-import HW_3.Tables.BandsTable;
-import HW_3.Tables.CountriesTable;
-import HW_3.Tables.SongsTable;
+import HW_3.model.Bands;
+import HW_3.model.Countries;
+import HW_3.model.Songs;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class QueryUtil {
     static final String DB_URL = "jdbc:sqlserver://localhost";
@@ -24,65 +25,94 @@ public class QueryUtil {
         }
     }
 
-    public ArrayList<CountriesTable> firstQuery() throws SQLException {
-        ArrayList<CountriesTable> countryList = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * from dbo.CountriesTable");
-        while (resultSet.next()) {
-            countryList.add(new CountriesTable(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3)));
+    public List<Countries> getAllCountries() {
+        List<Countries> countryList = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT CountryID, CountryName, CountryPopulation from dbo.CountriesTable");
+            while (resultSet.next()) {
+                countryList.add(new Countries(resultSet.getInt("CountryID"),
+                        resultSet.getString("CountryName"), resultSet.getInt("CountryPopulation")));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        resultSet.close();
-        statement.close();
         return countryList;
     }
 
-    public ArrayList<SongsTable> secondQuery() throws SQLException {
-        ArrayList<SongsTable> songsList = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT SongName, SongGenre from dbo.SongsTable");
-        while (resultSet.next()) {
-            songsList.add(new SongsTable(0, resultSet.getString(1), resultSet.getString(2)));
+    public List<Songs> getAllSongs() {
+        List<Songs> songsList = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT SongName, SongGenre from dbo.SongsTable");
+            while (resultSet.next()) {
+                songsList.add(new Songs(0, resultSet.getString("SongName"),
+                        resultSet.getString("SongGenre")));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        resultSet.close();
-        statement.close();
         return songsList;
     }
 
-    public ArrayList<BandsTable> thirdQuery() throws SQLException {
-        ArrayList<BandsTable> bandsList = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * from dbo.BandsTable WHERE BandName LIKE '%e%'");
-        while (resultSet.next()) {
-            bandsList.add(new BandsTable(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3)));
+    public List<Bands> getBandsContainingE() {
+        List<Bands> bandsList = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT BandID, BandName, BandCreationDate from dbo.BandsTable WHERE BandName LIKE '%e%'");
+            while (resultSet.next()) {
+                bandsList.add(new Bands(resultSet.getInt("BandID"),
+                        resultSet.getString("BandName"), resultSet.getInt("BandCreationDate")));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        resultSet.close();
-        statement.close();
         return bandsList;
     }
 
-    public ArrayList<CountriesTable> fourthQuery(int population, String stringValue) throws SQLException {
-        ArrayList<CountriesTable> countryList = new ArrayList<>();
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT CountryName, CountryPopulation FROM dbo.CountriesTable WHERE CountryPopulation<? AND CountryName LIKE ?");
-        preparedStatement.setString(2, "%" + stringValue + "%");
-        preparedStatement.setInt(1, population);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            countryList.add(new CountriesTable(0, resultSet.getString(1), resultSet.getInt(2)));
+    public List<Countries> getCountriesByPopulationAndName(int population, String stringValue) {
+        List<Countries> countryList = new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT CountryName, CountryPopulation FROM dbo.CountriesTable " +
+                            "WHERE CountryPopulation<? AND CountryName LIKE ?");
+            preparedStatement.setString(2, stringValue);
+            preparedStatement.setInt(1, population);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                countryList.add(new Countries(0, resultSet.getString("CountryName"),
+                        resultSet.getInt("CountryPopulation")));
+            }
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        resultSet.close();
-        preparedStatement.close();
         return countryList;
     }
 
-    public ArrayList<SongsTable> fifthQuery() throws SQLException {
-        ArrayList<SongsTable> songsList = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT SongID, SongName FROM SongsTable WHERE SongID%2=0");
-        while (resultSet.next()) {
-            songsList.add(new SongsTable(resultSet.getInt(1), resultSet.getString(2), "|none|"));
+    public List<Songs> getSongsWithOddID() {
+        List<Songs> songsList = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT SongID, SongName FROM SongsTable WHERE SongID%2=0");
+            while (resultSet.next()) {
+                songsList.add(new Songs(resultSet.getInt("SongID"),
+                        resultSet.getString("SongName")));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        resultSet.close();
-        statement.close();
         return songsList;
     }
 
@@ -92,7 +122,6 @@ public class QueryUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 }
