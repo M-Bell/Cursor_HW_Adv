@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Songs {
-    private int id;
-    private String name;
-    private String genre;
+    private final int id;
+    private final String name;
+    private final String genre;
 
     public Songs(int id, String name, String genre) {
         this.id = id;
@@ -17,5 +17,6 @@ public class Songs {
     public Songs(int id, String name) {
         this.id = id;
         this.name = name;
+        genre = null;
     }
 }

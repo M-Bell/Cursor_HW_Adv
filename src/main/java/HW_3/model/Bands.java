@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Bands {
-    private int id;
-    private String name;
-    private Integer creationDate;
+    private final int id;
+    private final String name;
+    private final Integer creationDate;
 
     public Bands(int id, String name, int creationDate) {
         this.id = id;
